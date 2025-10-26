@@ -1,64 +1,38 @@
-#include "global.h"
+#include <Arduino.h>
+#include <Wire.h>
+#include "esc_passthrough.h"
 
-volatile u8 setupDone = 0b00;
-volatile bool setup1CanStart = false;
+// deriving from uint32_t etc. would result in problems with function overloading (e.g. when using the same function for i32 variables and int literals, the compiler expects a function for int and one for i32)
+typedef float f32;
+typedef double f64;
+typedef signed char i8;
+typedef signed short i16;
+typedef signed int i32;
+typedef signed long long i64;
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef unsigned int u32;
+typedef unsigned long long u64;
+
+#define CHECK_TYPE_SIZE(type, expected) static_assert((sizeof(type)) == (expected), "Size of " #type " is not as expected.")
+
+#define PIN_MOTOR_0 0
+#define PIN_MOTOR_1 1
+#define PIN_MOTOR_2 2
+#define PIN_MOTOR_3 3
 
 void setup() {
-	if (powerOnResetMagicNumber == 0xdeadbeefdeadbeef)
-		bootReason = rebootReason;
-	else
-		bootReason = BootReason::POR;
-	powerOnResetMagicNumber = 0xdeadbeefdeadbeef;
-	rebootReason = BootReason::WATCHDOG;
 	Serial.begin(115200);
-	DEBUG_PRINTSLN("start");
-#if HW_VERSION == 2
-	/*initStandbySwitch();
-	initSpeaker();
-	ledInit();*/
-#endif
-	//initAnalog();
-	//if (bootReason == BootReason::TO_ESC_PASSTHROUGH) {
-		//initDisplay();
-		u8 pins[4] = {PIN_MOTOR_BASE, PIN_MOTOR_BASE + 1, PIN_MOTOR_BASE + 2, PIN_MOTOR_BASE + 3};
+		u8 pins[4] = {PIN_MOTOR_0, PIN_MOTOR_1, PIN_MOTOR_2, PIN_MOTOR_3};
 		beginPassthrough(pins, 4);
-		//triggerInit();
-		/*tft.setFont(&FreeSans9pt7b);
-		tft.fillScreen(ST77XX_BLACK);
-		tft.setTextColor(ST77XX_WHITE);
-		printCentered("ESC Passthrough", SCREEN_WIDTH / 2, 15, SCREEN_WIDTH, 1, 22, ClipBehavior::PRINT_LAST_LINE_CENTERED);
-		SET_DEFAULT_FONT;*/
-/*#if HW_VERSION == 1
-		printCentered("Use BLHeliSuite32 to configure ESCs. Click disconnect or hold the trigger for 3 sec to boot into normal mode again.", SCREEN_WIDTH / 2, 30, SCREEN_WIDTH, 5, YADVANCE, ClipBehavior::PRINT_LAST_LINE_CENTERED);
-#elif HW_VERSION == 2
-		printCentered("Use AM32 Configurator to configure ESCs. Click disconnect or hold the trigger for 3 seconds to boot into normal mode again.", SCREEN_WIDTH / 2, 40, SCREEN_WIDTH, 5, YADVANCE_RELAXED, ClipBehavior::PRINT_LAST_LINE_CENTERED);
-#endif*/
-		elapsedMillis triggerTimer = 0;
 		while (processPassthrough()) {
-			/*triggerLoop();
-			if (triggerState) {
-				if (triggerUpdateFlag) {
-					triggerUpdateFlag = false;
-					triggerTimer = 0;
-				}
-				if (triggerTimer >= 3000)
-					break;
-			} else {
-				triggerUpdateFlag = false;
-			}*/
 		}
-		sleep_ms(100);
-		rebootReason = BootReason::FROM_ESC_PASSTHROUGH;
-		rp2040.reboot();
-	//}
 }
 
 void loop() {
-
 }
 
 void setup1() {
-
 }
 
 
