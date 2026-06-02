@@ -16,10 +16,10 @@ typedef unsigned long long u64;
 
 #define CHECK_TYPE_SIZE(type, expected) static_assert((sizeof(type)) == (expected), "Size of " #type " is not as expected.")
 
-#define PIN_MOTOR_0 0
-#define PIN_MOTOR_1 1
-#define PIN_MOTOR_2 2
-#define PIN_MOTOR_3 3
+#define PIN_MOTOR_0 1
+#define PIN_MOTOR_1 2
+#define PIN_MOTOR_2 3
+#define PIN_MOTOR_3 4
 
 void setup() {
 	Serial.begin(115200);
